@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace SocialPlatform.Pages;
+namespace SocialPlatform.Views;
 public class PrivacyModel : PageModel
 {
     private readonly ILogger<PrivacyModel> _logger;

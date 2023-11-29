@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Models;
+
 namespace SocialPlatform;
 
 public class Program
@@ -7,6 +10,14 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddDbContext<DatabaseContext>(options =>
+            options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DatabaseContext"),
+                o => o.EnableRetryOnFailure()));
+
+        
         builder.Services.AddRazorPages();
 
         var app = builder.Build();
@@ -25,8 +36,10 @@ public class Program
         app.UseRouting();
 
         app.UseAuthorization();
-
         app.MapRazorPages();
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Account}/{action=Index}");
 
         app.Run();
     }
