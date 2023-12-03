@@ -1,9 +1,13 @@
-﻿<!DOCTYPE html>
+﻿ @inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
+ @inject SocialPlatform.Services.AccountService _accountService
+ @inject SocialPlatform.Services.BlobStorageHelper _blobStorageHelper
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SocialPlatform</title>
+    <title>Social Platform</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SocialPlatform.styles.css" asp-append-version="true" />
@@ -11,22 +15,92 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">SocialPlatform</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="container main-area">
+                @{
+                    if (_httpContextAccessor is not null
+                    && _httpContextAccessor.HttpContext is not null
+                    && _httpContextAccessor.HttpContext.Request.Cookies
+                    .TryGetValue(nameof(Models.Entities.User.SessionId),
+                    out var sessionId))
+                    {
+                        var userId = await _accountService.TryGetUserIdBySessionId(sessionId);
+                        if (userId is not null)
+                        {
+                            var profilePictureLink = default(string);
+
+                            if (!_httpContextAccessor.HttpContext.Request.Cookies
+                            .TryGetValue(nameof(profilePictureLink),
+                            out profilePictureLink))
+                            {
+                                profilePictureLink = _blobStorageHelper.DownloadImage(userId);
+
+                                var options = new CookieOptions()
+                                {
+                                    Expires = DateTime.UtcNow.AddDays(1),
+                                    Domain = _httpContextAccessor.HttpContext.Request.Host.Host,
+                                };
+
+                                _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                                nameof(profilePictureLink),
+                                profilePictureLink,
+                                options);
+                            }
+
+                            <a
+                            asp-controller="Account"
+                            asp-action="User"
+                            asp-route-userId="@userId">
+                                <div class="navbar-icon profile-picture" style="background-image: url(@profilePictureLink);"></div>
+                            </a>
+                            <a
+                            asp-controller="Account"
+                            asp-action="Index">
+                                <div class="navbar-icon logo-icon"></div>
+                            </a>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Settings
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a
+                                        class="dropdown-item"
+                                        asp-controller="Account"
+                                        asp-action="EditUser">
+                                        Edit User Info
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                        class="dropdown-item"
+                                        asp-controller="Account"
+                                        asp-action="LogOut">
+                                        Log Out
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            _httpContextAccessor.HttpContext.Response.Cookies.Delete(nameof(Models.Entities.User.SessionId));
+                            <a
+                            asp-controller="Account"
+                            asp-action="Index">
+                                <div class="navbar-icon logo-icon"></div>
+                            </a>
+                        }
+
+                    }
+                    else
+                    {
+                        <a
+                        asp-controller="Account"
+                        asp-action="Index">
+                            <div class="navbar-icon logo-icon"></div>
+                        </a>
+                    }
+                }
             </div>
         </nav>
     </header>
@@ -38,7 +112,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - SocialPlatform - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2023 - SocialPlatform
         </div>
     </footer>
 

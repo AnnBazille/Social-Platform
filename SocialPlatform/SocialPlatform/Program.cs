@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Models;
+using SocialPlatform.Repositories;
+using SocialPlatform.Services;
 
 namespace SocialPlatform;
 
@@ -17,7 +19,12 @@ public class Program
                 builder.Configuration.GetConnectionString("DatabaseContext"),
                 o => o.EnableRetryOnFailure()));
 
-        
+        builder.Services.AddScoped<BlobStorageHelper>();
+
+        builder.Services.AddScoped<UserRepository>();
+
+        builder.Services.AddScoped<AccountService>();
+
         builder.Services.AddRazorPages();
 
         var app = builder.Build();
