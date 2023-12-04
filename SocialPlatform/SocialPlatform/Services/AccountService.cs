@@ -33,4 +33,19 @@ public class AccountService
 
         return id is not null;
     }
+
+    public async Task<bool> TryUpdate(
+        string? email,
+        string? password,
+        string? handle,
+        string? displayName,
+        string id)
+    {
+        return await _userRepository.TryUpdateUser(
+            email,
+            password,
+            handle,
+            displayName,
+            id);
+    }
 }

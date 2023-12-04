@@ -1,0 +1,43 @@
+﻿@model Models.RegisterRequest
+
+<form method="post" action="/Account/Update">
+    <div class="main-area">
+        <div class="row g-1">
+            <div class="col-12">
+                <input
+                 type="text"
+                 class="form-control"
+                 id="handle"
+                 placeholder="handle"
+                 asp-for="Handle" />
+            </div>
+            <div class="col-12">
+                <input
+                 type="text"
+                 class="form-control"
+                 id="displayName"
+                 placeholder="display name"
+                 asp-for="DisplayName" />
+            </div>
+            <div class="col-12">
+                <input
+                 type="email"
+                 class="form-control"
+                 id="email"
+                 placeholder="email"
+                 asp-for="Email" />
+            </div>
+            <div class="col-12">
+                <input
+                 type="password"
+                 class="form-control"
+                 id="password"
+                 placeholder="password"
+                 asp-for="Password" />
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-dark">Update</button>
+            </div>
+        </div>
+    </div>
+</form>

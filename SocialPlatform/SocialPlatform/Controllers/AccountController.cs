@@ -38,7 +38,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<ViewResult> LogIn(LogInRequest request)
+    public async Task<RedirectResult> LogIn(LogInRequest request)
     {
         var sessionId = await _accountService.TryLogIn(request);
 
@@ -58,7 +58,7 @@ public class AccountController : Controller
             _sessionId = sessionId;
         }
 
-        return await Index();
+        return Redirect("/Account/Index");
     }
 
     public ViewResult SignUp()
@@ -67,7 +67,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<ViewResult> Register(RegisterRequest request)
+    public async Task<RedirectResult> Register(RegisterRequest request)
     {
         if (await _accountService.TryRegister(request))
         {
@@ -79,7 +79,30 @@ public class AccountController : Controller
         }
         else
         {
-            return SignUp();
+            return Redirect("/Account/SignUp");
         }
+    }
+
+    public ViewResult EditUser()
+    {
+        return View(nameof(EditUser));
+    }
+
+    [HttpPost]
+    public async Task<RedirectResult> Update(RegisterRequest request)
+    {
+        if (Request.Cookies.TryGetValue(nameof(Data.Entities.User.SessionId), out var sessionId))
+        {
+            var userId = await _accountService.TryGetUserIdBySessionId(sessionId!);
+
+            await _accountService.TryUpdate(
+                request.Email,
+                request.Password,
+                request.Handle,
+                request.DisplayName,
+                userId!);
+        }
+
+        return Redirect("/Account/Index");
     }
 }

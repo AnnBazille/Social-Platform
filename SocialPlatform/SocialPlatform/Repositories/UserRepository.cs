@@ -81,6 +81,57 @@ public class UserRepository
         }
     }
 
+    public async Task<bool> TryUpdateUser(
+        string? email,
+        string? password,
+        string? handle,
+        string? displayName,
+        string id)
+    {
+        var user = DatabaseContext
+            .Users
+            .FirstOrDefault(x => x.Id == id);
+
+        if (user is not null)
+        {
+            if (email is not null)
+            {
+                user.Email = email;
+            }
+
+            if (password is not null)
+            {
+                var salt = GetSalt();
+                var passwordHash = GetPasswordHash(password!, salt);
+
+                user.PasswordHash = passwordHash;
+                user.Salt = Convert.ToHexString(salt);
+            }
+
+            if (handle is not null)
+            {
+                user.Handle = handle;
+            }
+
+            if (displayName is not null)
+            {
+                user.DisplayName = displayName;
+            }
+
+            try
+            {
+                await DatabaseContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     private string GetPasswordHash(string password, byte[] salt)
     {
         const int iterationCount = 100000;
