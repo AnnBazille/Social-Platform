@@ -1,6 +1,5 @@
 ﻿ @inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
  @inject SocialPlatform.Services.AccountService _accountService
- @inject SocialPlatform.Services.BlobStorageHelper _blobStorageHelper
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,37 +19,17 @@
                     if (_httpContextAccessor is not null
                     && _httpContextAccessor.HttpContext is not null
                     && _httpContextAccessor.HttpContext.Request.Cookies
-                    .TryGetValue(nameof(Models.Entities.User.SessionId),
+                    .TryGetValue(nameof(Data.Entities.User.SessionId),
                     out var sessionId))
                     {
                         var userId = await _accountService.TryGetUserIdBySessionId(sessionId);
                         if (userId is not null)
                         {
-                            var profilePictureLink = default(string);
-
-                            if (!_httpContextAccessor.HttpContext.Request.Cookies
-                            .TryGetValue(nameof(profilePictureLink),
-                            out profilePictureLink))
-                            {
-                                profilePictureLink = _blobStorageHelper.DownloadImage(userId);
-
-                                var options = new CookieOptions()
-                                {
-                                    Expires = DateTime.UtcNow.AddDays(1),
-                                    Domain = _httpContextAccessor.HttpContext.Request.Host.Host,
-                                };
-
-                                _httpContextAccessor.HttpContext.Response.Cookies.Append(
-                                nameof(profilePictureLink),
-                                profilePictureLink,
-                                options);
-                            }
-
                             <a
                             asp-controller="Account"
                             asp-action="User"
                             asp-route-userId="@userId">
-                                <div class="navbar-icon profile-picture" style="background-image: url(@profilePictureLink);"></div>
+                                <div class="navbar-icon profile-picture"></div>
                             </a>
                             <a
                             asp-controller="Account"
@@ -83,7 +62,7 @@
                         }
                         else
                         {
-                            _httpContextAccessor.HttpContext.Response.Cookies.Delete(nameof(Models.Entities.User.SessionId));
+                            _httpContextAccessor.HttpContext.Response.Cookies.Delete(nameof(Data.Entities.User.SessionId));
                             <a
                             asp-controller="Account"
                             asp-action="Index">

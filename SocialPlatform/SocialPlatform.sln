@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialPlatform", "SocialPlatform\SocialPlatform.csproj", "{B55788ED-AAC2-4B07-AAA5-E2F9E893205A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{6A330A7F-C37F-4FBA-94EF-9F4003C8C3F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Models\Data.csproj", "{6A330A7F-C37F-4FBA-94EF-9F4003C8C3F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

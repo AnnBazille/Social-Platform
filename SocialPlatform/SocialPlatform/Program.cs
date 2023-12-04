@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Models;
+using Data;
 using SocialPlatform.Repositories;
 using SocialPlatform.Services;
 
@@ -18,8 +18,6 @@ public class Program
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DatabaseContext"),
                 o => o.EnableRetryOnFailure()));
-
-        builder.Services.AddScoped<BlobStorageHelper>();
 
         builder.Services.AddScoped<UserRepository>();
 

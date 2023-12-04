@@ -36,7 +36,7 @@ body {
 }
 
 .profile-picture {
-    border-radius: 100%;
+    background-image: url(../icons/profile.svg);
 }
 
 .logo-icon {

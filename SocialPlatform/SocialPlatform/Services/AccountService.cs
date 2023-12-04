@@ -1,4 +1,5 @@
-﻿using SocialPlatform.Repositories;
+﻿using SocialPlatform.Models;
+using SocialPlatform.Repositories;
 
 namespace SocialPlatform.Services;
 
@@ -6,7 +7,8 @@ public class AccountService
 {
     private readonly UserRepository _userRepository;
 
-    public AccountService(UserRepository userRepository)
+    public AccountService(
+        UserRepository userRepository)
     {
         _userRepository = userRepository;
     }
@@ -14,5 +16,21 @@ public class AccountService
     public async Task<string?> TryGetUserIdBySessionId(string sessionId)
     {
         return await _userRepository.TryGetUserIdBySessionId(sessionId);
+    }
+
+    public async Task<string?> TryLogIn(LogInRequest request)
+    {
+        return await _userRepository.TrySetNewSessionId(request.Email!, request.Password!);
+    }
+
+    public async Task<bool> TryRegister(RegisterRequest request)
+    {
+        var id = await _userRepository.TryAddNewUser(
+            request.Email,
+            request.Password,
+            request.Handle,
+            request.DisplayName);
+
+        return id is not null;
     }
 }

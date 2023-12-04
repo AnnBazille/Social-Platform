@@ -1,4 +1,4 @@
-﻿namespace Models.Entities;
+﻿namespace Data.Entities;
 
 public class Post
 {

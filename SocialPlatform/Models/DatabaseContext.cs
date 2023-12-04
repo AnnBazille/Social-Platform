@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Models.Entities;
+using Data.Entities;
 
-namespace Models;
+namespace Data;
 
 public class DatabaseContext : DbContext
 {
