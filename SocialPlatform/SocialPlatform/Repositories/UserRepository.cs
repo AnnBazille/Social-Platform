@@ -34,7 +34,7 @@ public class UserRepository
         {
             string passwordHash = GetPasswordHash(
                 password,
-                Convert.FromHexString(user.Salt!));
+                Convert.FromHexString(user.Salt!.Replace(" ", "")));
 
             if (passwordHash == user.PasswordHash)
             {
@@ -88,9 +88,9 @@ public class UserRepository
         string? displayName,
         string id)
     {
-        var user = DatabaseContext
+        var user = await DatabaseContext
             .Users
-            .FirstOrDefault(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (user is not null)
         {
@@ -130,6 +130,19 @@ public class UserRepository
         }
 
         return false;
+    }
+
+    public async Task RemoveSessionId(string id)
+    {
+        var user = await DatabaseContext
+            .Users
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (user is not null)
+        {
+            user.SessionId = string.Empty;
+            await DatabaseContext.SaveChangesAsync();
+        }
     }
 
     private string GetPasswordHash(string password, byte[] salt)

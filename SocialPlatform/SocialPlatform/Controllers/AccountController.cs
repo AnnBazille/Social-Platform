@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using SocialPlatform.Models;
 using SocialPlatform.Services;
 
@@ -101,6 +102,18 @@ public class AccountController : Controller
                 request.Handle,
                 request.DisplayName,
                 userId!);
+        }
+
+        return Redirect("/Account/Index");
+    }
+
+    public async Task<RedirectResult> LogOut()
+    {
+        if (Request.Cookies.TryGetValue(nameof(Data.Entities.User.SessionId), out var sessionId))
+        {
+            var userId = await _accountService.TryGetUserIdBySessionId(sessionId!);
+            await _accountService.LogOut(userId!);
+            Response.Cookies.Delete(nameof(Data.Entities.User.SessionId));
         }
 
         return Redirect("/Account/Index");

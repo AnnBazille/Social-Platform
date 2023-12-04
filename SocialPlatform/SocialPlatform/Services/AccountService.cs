@@ -48,4 +48,9 @@ public class AccountService
             displayName,
             id);
     }
+
+    public async Task LogOut(string id)
+    {
+        await _userRepository.RemoveSessionId(id);
+    }
 }
