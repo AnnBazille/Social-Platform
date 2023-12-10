@@ -20,8 +20,10 @@ public class Program
                 o => o.EnableRetryOnFailure()));
 
         builder.Services.AddScoped<UserRepository>();
+        builder.Services.AddScoped<MediaRepository>();
 
         builder.Services.AddScoped<AccountService>();
+        builder.Services.AddScoped<MediaService>();
 
         builder.Services.AddRazorPages();
 

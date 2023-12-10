@@ -1,0 +1,53 @@
+﻿@model PostModel
+
+<div class="post-container">
+    <div class="row-container">
+        <a class="main-page-link-text"
+        asp-controller="Media"
+        asp-action="GetFeed"
+        asp-route-userId="@Model.UserId"
+        asp-route-skip="0">
+            @Model.DisplayName <i>@Model.Handle</i>
+        </a>
+        <div>@Model.Date.ToString("MMMM dd, yyyy")</div>
+    </div>
+    <hr />
+    <a
+    class="main-page-link-text"
+    asp-controller="Media"
+    asp-action="GetFeed"
+    asp-route-postId="@Model.Id"
+    asp-route-skip="0">
+        <div>@Model.Message</div>
+    </a>
+    <hr />
+    <div class="row-container">
+        <div>
+            <a
+            class="main-page-link-text"
+            asp-controller="Media"
+            asp-action="ChangeLike"
+            asp-route-postId="@Model.Id">
+                <div class="small-cell-container">
+                    @{
+                        if (Model.IsLiked)
+                        {
+                            <img src="~/icons/like-fill.svg" />
+                        }
+                        else
+                        {
+                            <img src="~/icons/like.svg" />
+                        }
+                    }
+                    <div>@Model.Likes</div>
+                </div>
+            </a>
+        </div>
+        <div>
+            <div class="small-cell-container">
+                <img src="~/icons/comment.svg" />
+                <div>@Model.Replies</div>
+            </div>
+        </div>
+    </div>
+</div>

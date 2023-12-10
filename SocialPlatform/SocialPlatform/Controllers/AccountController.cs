@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SocialPlatform.Models;
 using SocialPlatform.Services;
 
@@ -15,7 +14,7 @@ public class AccountController : Controller
         _accountService = accountService;
     }
 
-    public async Task<ViewResult> Index()
+    public async Task<ActionResult> Index()
     {
         var sessionId = default(string);
 
@@ -26,20 +25,20 @@ public class AccountController : Controller
             
             if (userId != null)
             {
-                return View(nameof(Index));
+                return Redirect("/Media/GetFeed");
             }
         }
 
-        return SignIn();
+        return Redirect("/Account/SignIn");
     }
 
-    public ViewResult SignIn()
+    public ActionResult SignIn()
     {
         return View(nameof(SignIn));
     }
 
     [HttpPost]
-    public async Task<RedirectResult> LogIn(LogInRequest request)
+    public async Task<ActionResult> LogIn(LogInRequest request)
     {
         var sessionId = await _accountService.TryLogIn(request);
 
@@ -59,16 +58,16 @@ public class AccountController : Controller
             _sessionId = sessionId;
         }
 
-        return Redirect("/Account/Index");
+        return Redirect("/Media/GetFeed");
     }
 
-    public ViewResult SignUp()
+    public ActionResult SignUp()
     {
         return View(nameof(SignUp));
     }
 
     [HttpPost]
-    public async Task<RedirectResult> Register(RegisterRequest request)
+    public async Task<ActionResult> Register(RegisterRequest request)
     {
         if (await _accountService.TryRegister(request))
         {
@@ -84,13 +83,13 @@ public class AccountController : Controller
         }
     }
 
-    public ViewResult EditUser()
+    public ActionResult EditUser()
     {
         return View(nameof(EditUser));
     }
 
     [HttpPost]
-    public async Task<RedirectResult> Update(RegisterRequest request)
+    public async Task<ActionResult> Update(RegisterRequest request)
     {
         if (Request.Cookies.TryGetValue(nameof(Data.Entities.User.SessionId), out var sessionId))
         {
@@ -107,7 +106,7 @@ public class AccountController : Controller
         return Redirect("/Account/Index");
     }
 
-    public async Task<RedirectResult> LogOut()
+    public async Task<ActionResult> LogOut()
     {
         if (Request.Cookies.TryGetValue(nameof(Data.Entities.User.SessionId), out var sessionId))
         {
@@ -117,5 +116,17 @@ public class AccountController : Controller
         }
 
         return Redirect("/Account/Index");
+    }
+
+    public async Task<ActionResult> ChangeFollowing(string userId)
+    {
+        if (Request.Cookies.TryGetValue(nameof(Data.Entities.User.SessionId), out var sessionId))
+        {
+            var currentUserId = await _accountService.TryGetUserIdBySessionId(sessionId);
+
+            await _accountService.ChangeFollowing(userId, currentUserId);
+        }
+
+        return Redirect(Request.Headers["Referer"].ToString());
     }
 }

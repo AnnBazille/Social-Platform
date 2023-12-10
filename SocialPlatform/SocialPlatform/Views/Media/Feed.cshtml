@@ -1,0 +1,139 @@
+﻿@using SocialPlatform.Models
+@model FeedModel
+
+<div class="main-area">
+    @{
+        if (Model is not null && Model.User is not null)
+        {
+            <div class="post-container">
+                <div class="row-container">
+                    <div>@Model.User.DisplayName <i>@Model.User.Handle</i></div>
+                    @{
+                        <a
+                        role="button"
+                        class="btn btn-dark"
+                        asp-controller="Account"
+                        asp-action="ChangeFollowing"
+                        asp-route-userId="@Model.User.Id">
+                            @{
+                                if (Model.User.IsFollowing!.Value)
+                                {
+                                    <div>Following</div>
+                                }
+                                else
+                                {
+                                    <div>Follow</div>
+                                }
+                            }
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+        if (Model is not null && Model.PostStack is not null)
+        {
+            foreach (var post in Model.PostStack)
+            {
+                @await Html.PartialAsync(
+                "~/Views/Media/Partial/_Post.cshtml",
+                post);
+            }
+        }
+    }
+
+    <div class="modal fade"
+         id="add-post-modal"
+         tabindex="-1"
+         role="dialog">
+        <div class="modal-dialog modal-dialog-centered"
+             role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @{
+                        if (Model is not null && Model.PostStack is not null && Model.PostStack.Count() > 0)
+                        {
+                            <div>Add Reply</div>
+                        }
+                        else
+                        {
+                            <div>Add Post</div>
+                        }
+                    }
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="/Media/Post">
+                        <div class="main-area">
+                            <div class="row g-1">
+                                @{
+                                    if (Model is not null && Model.PostStack is not null && Model.PostStack.Count() != 0)
+                                    {
+                                        <input type="hidden" id="parentId" name="parentId" value="@Model.PostStack.Last().Id">
+                                    }
+                                }
+                                <div class="col-12">
+                                    <input type="text"
+                                           class="form-control"
+                                           id="message"
+                                           name="message"
+                                           placeholder="message" />
+                                </div>
+                                <div class="col-12 d-grid">
+                                    <button type="submit" class="btn btn-dark">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-1">
+        <div class="col-12 d-grid">
+            <a role="button"
+               class="btn btn-dark main-page-button"
+               href="#add-post-modal"
+               data-bs-toggle="modal"
+               data-bs-target="#add-post-modal">
+                @{
+                    if (Model is not null && Model.PostStack is not null && Model.PostStack.Count() > 0)
+                    {
+                        <div>Add Reply</div>
+                    }
+                    else
+                    {
+                        <div>Add Post</div>
+                    }
+                }
+            </a>
+        </div>
+    </div>
+    
+    @{
+        if (Model is not null && Model.Children is not null)
+        {
+            foreach (var post in Model.Children)
+            {
+                @await Html.PartialAsync(
+                "~/Views/Media/Partial/_Post.cshtml",
+                post);
+            }
+        }
+    }
+
+    <div class="row g-1">
+        <div class="col-12 d-grid">
+            <a role="button"
+               class="btn btn-dark main-page-button"
+               asp-controller="Media"
+               asp-action="GetFeed"
+               asp-route-userId="@Model?.User?.Id"
+               asp-route-skip="@((Model?.Skip ?? 0) + 10)"
+               asp-route-postId="@(Model?.PostStack?.LastOrDefault()?.Id)">
+                <div>Load more posts</div>
+            </a>
+        </div>
+    </div>
+
+</div>

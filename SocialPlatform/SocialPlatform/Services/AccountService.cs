@@ -53,4 +53,9 @@ public class AccountService
     {
         await _userRepository.RemoveSessionId(id);
     }
+
+    public async Task ChangeFollowing(string? userId, string? followerId)
+    {
+        await _userRepository.ChangeFollowing(userId, followerId);
+    }
 }

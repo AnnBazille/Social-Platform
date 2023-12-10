@@ -42,3 +42,29 @@ body {
 .logo-icon {
     background-image: url(../icons/logo.svg);
 }
+
+.post-container {
+    border: 1px solid black;
+    padding: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.row-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.small-cell-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.main-page-button {
+    margin-bottom: 0.25rem;
+}
+
+.main-page-link-text {
+    text-decoration: none;
+    color: black;
+}
